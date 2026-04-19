@@ -177,7 +177,6 @@ export default function NewPost() {
             ref={fileRef}
             type="file"
             accept="image/*"
-            capture="environment"
             onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
           />
           {preview && (
