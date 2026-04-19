@@ -37,10 +37,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const err = await res.json().catch(() => ({ error: 'login failed' }));
       throw new Error(err.error ?? 'login failed');
     }
-    const { email, token_hash } = (await res.json()) as { email: string; token_hash: string };
+    const { token_hash } = (await res.json()) as { email: string; token_hash: string };
     const { error } = await supabase.auth.verifyOtp({
       type: 'email',
-      email,
       token_hash,
     });
     if (error) throw error;
