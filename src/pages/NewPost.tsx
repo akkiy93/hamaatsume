@@ -5,6 +5,7 @@ import { useAuth } from '../lib/auth';
 import { compressImage } from '../lib/image';
 import { uploadPhoto } from '../lib/storage';
 import { KIND_LABELS, type PostKind, type Poster } from '../lib/types';
+import LocationPicker from '../components/LocationPicker';
 
 export default function NewPost() {
   const { session } = useAuth();
@@ -76,20 +77,6 @@ export default function NewPost() {
     if (!t) return;
     if (!tags.includes(t)) setTags([...tags, t]);
     setTagInput('');
-  }
-
-  async function useGeolocation() {
-    if (!navigator.geolocation) {
-      setError('この端末では位置情報を取得できません');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLat(pos.coords.latitude.toFixed(6));
-        setLng(pos.coords.longitude.toFixed(6));
-      },
-      (err) => setError(`位置情報エラー: ${err.message}`),
-    );
   }
 
   async function ensurePosterId(): Promise<string | null> {
@@ -285,19 +272,17 @@ export default function NewPost() {
             <label>撮影日</label>
             <input type="date" value={takenAt} onChange={(e) => setTakenAt(e.target.value)} />
           </div>
-          <div style={{ flex: 1 }}>
-            <label>緯度</label>
-            <input value={lat} onChange={(e) => setLat(e.target.value)} placeholder="35.4437" />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label>経度</label>
-            <input value={lng} onChange={(e) => setLng(e.target.value)} placeholder="139.638" />
-          </div>
         </div>
         <div>
-          <button type="button" onClick={() => void useGeolocation()}>
-            📍 現在地を使う
-          </button>
+          <label>場所（任意）</label>
+          <LocationPicker
+            lat={lat === '' ? null : Number(lat)}
+            lng={lng === '' ? null : Number(lng)}
+            onChange={(a, b) => {
+              setLat(a == null ? '' : String(a));
+              setLng(b == null ? '' : String(b));
+            }}
+          />
         </div>
 
         {error && <div className="error">{error}</div>}
