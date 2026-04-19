@@ -131,9 +131,10 @@ export default function PostDetail() {
       <div className="row" style={{ marginTop: 20 }}>
         <button onClick={() => nav('/')}>← 図鑑に戻る</button>
         {isOwner && (
-          <button className="danger" onClick={() => void remove()} disabled={busy}>
-            削除
-          </button>
+          <>
+            <button onClick={() => nav(`/post/${post.id}/edit`)}>✏️ 編集</button>
+            <button className="danger" onClick={() => void remove()} disabled={busy}>削除</button>
+          </>
         )}
       </div>
     </div>
