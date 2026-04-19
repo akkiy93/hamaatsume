@@ -16,9 +16,11 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
-const PASSPHRASE = Deno.env.get('PASSPHRASE') ?? '';
-const SB_URL = Deno.env.get('SB_URL') ?? '';
-const SB_SERVICE_ROLE_KEY = Deno.env.get('SB_SERVICE_ROLE_KEY') ?? '';
+// Normalize unicode (NFC) and trim — shells sometimes add trailing CR/LF.
+const norm = (s: string) => s.normalize('NFC').trim();
+const PASSPHRASE = norm(Deno.env.get('PASSPHRASE') ?? '');
+const SB_URL = (Deno.env.get('SB_URL') ?? '').trim();
+const SB_SERVICE_ROLE_KEY = (Deno.env.get('SB_SERVICE_ROLE_KEY') ?? '').trim();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -52,8 +54,8 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'invalid json' }, 400);
   }
 
-  const passphrase = (body.passphrase ?? '').trim();
-  const nickname = (body.nickname ?? '').trim().toLowerCase();
+  const passphrase = norm(body.passphrase ?? '');
+  const nickname = norm(body.nickname ?? '').toLowerCase();
 
   if (!passphrase || !nickname) return jsonResponse({ error: 'missing fields' }, 400);
   if (!/^[a-z0-9_\-]{1,24}$/.test(nickname)) {
