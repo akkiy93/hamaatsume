@@ -6,6 +6,7 @@ import { compressImage } from '../lib/image';
 import { uploadPhoto } from '../lib/storage';
 import { KIND_LABELS, type PostKind, type Poster } from '../lib/types';
 import LocationPicker from '../components/LocationPicker';
+import TagInput from '../components/TagInput';
 
 export default function NewPost() {
   const { session } = useAuth();
@@ -21,7 +22,6 @@ export default function NewPost() {
   const [takenAt, setTakenAt] = useState<string>('');
   const [lat, setLat] = useState('');
   const [lng, setLng] = useState('');
-  const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [posters, setPosters] = useState<Poster[]>([]);
   const [posterId, setPosterId] = useState<string>('');
@@ -70,13 +70,6 @@ export default function NewPost() {
     setFile(f);
     if (preview) URL.revokeObjectURL(preview);
     setPreview(f ? URL.createObjectURL(f) : null);
-  }
-
-  function addTag() {
-    const t = tagInput.trim().replace(/^#/, '');
-    if (!t) return;
-    if (!tags.includes(t)) setTags([...tags, t]);
-    setTagInput('');
   }
 
   async function ensurePosterId(): Promise<string | null> {
@@ -230,36 +223,8 @@ export default function NewPost() {
         </div>
 
         <div>
-          <label>タグ（Enter/スペースで追加）</label>
-          <div className="row">
-            <input
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  addTag();
-                }
-              }}
-              placeholder="例: 駅名 看板 ラーメン"
-              style={{ flex: 1 }}
-            />
-            <button type="button" onClick={addTag}>
-              追加
-            </button>
-          </div>
-          <div style={{ marginTop: 6 }}>
-            {tags.map((t) => (
-              <span
-                key={t}
-                className="chip"
-                onClick={() => setTags(tags.filter((x) => x !== t))}
-                title="クリックで削除"
-              >
-                #{t} ✕
-              </span>
-            ))}
-          </div>
+          <label>タグ</label>
+          <TagInput tags={tags} onChange={setTags} />
         </div>
 
         <div>
